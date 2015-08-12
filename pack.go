@@ -326,7 +326,6 @@ func (wft *zipWalk) compress(name, fpath string, fi os.FileInfo) (bool, error) {
 
 func packDirectory(excludePrefix []string, excludeSuffix []string,
 	excludeRegexp []*regexp.Regexp, includePath ...string) (err error) {
-	fmt.Println(excludePrefix, excludeSuffix, excludeRegexp, includePath)
 
 	fmt.Printf("exclude relpath prefix: %s\n", strings.Join(excludePrefix, ":"))
 	fmt.Printf("exclude relpath suffix: %s\n", strings.Join(excludeSuffix, ":"))
