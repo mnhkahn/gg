@@ -326,12 +326,14 @@ func (wft *zipWalk) compress(name, fpath string, fi os.FileInfo) (bool, error) {
 
 func packDirectory(excludePrefix []string, excludeSuffix []string,
 	excludeRegexp []*regexp.Regexp, includePath ...string) (err error) {
+	fmt.Println(excludePrefix, excludeSuffix, excludeRegexp, includePath)
 
 	fmt.Printf("exclude relpath prefix: %s\n", strings.Join(excludePrefix, ":"))
 	fmt.Printf("exclude relpath suffix: %s\n", strings.Join(excludeSuffix, ":"))
 	if len(excludeRegexp) > 0 {
 		fmt.Printf("exclude filename regex: `%v`\n", excludeRegexp)
 	}
+	log.Println("Create compressed file: ", NewGGConfig().AppPath)
 	w, err := os.OpenFile(NewGGConfig().AppPath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 	if err != nil {
 		return err
@@ -376,6 +378,7 @@ func packDirectory(excludePrefix []string, excludeSuffix []string,
 		fmt.Println(p, "*****")
 		err = wft.walkRoot(p)
 		if err != nil {
+			log.Println("Tar error:", err)
 			return
 		}
 	}
