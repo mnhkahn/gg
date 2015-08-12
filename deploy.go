@@ -30,6 +30,7 @@ func Deploy() {
 		if strings.Index(p.Executable(), NewGGConfig().AppName) != -1 {
 			log.Printf("[pgrep %s] got pid: %d.\n", NewGGConfig().AppName, p.Pid())
 			killProcess(p.Pid())
+			break
 		}
 	}
 }

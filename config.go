@@ -104,6 +104,10 @@ func ParseConfig() {
 		// AppConfig.NgrokPort = viper.GetString("NgrokPort")
 	}
 
+	if AppConfig.AppName == "" {
+		panic("AppName is nil.")
+	}
+
 	AppConfig.AppPath = AppConfig.CurPath + "/" + AppConfig.AppName + ".tar.gz"
 
 	AppConfig.PackFormat = "gzip"
