@@ -40,4 +40,6 @@ func GitPull() {
 		return
 	}
 	log.Println("Git pull Success.")
+
+	ParseConfig()
 }
