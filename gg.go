@@ -5,8 +5,6 @@ import (
 	"os"
 
 	"github.com/codegangsta/cli"
-
-	"github.com/mnhkahn/gg/conf"
 )
 
 func main() {
@@ -21,9 +19,10 @@ func main() {
 			Aliases: []string{"s"},
 			Action: func(c *cli.Context) {
 				// Build
-				Build()
-				// Run
-				Start()
+				if err := Build(); err == nil {
+					// Run
+					Start()
+				}
 			},
 		},
 		{
@@ -41,7 +40,7 @@ func main() {
 			Aliases: []string{"d"},
 			Action: func(c *cli.Context) {
 				// Build()
-				if conf.NewGGConfig().IsGitPull {
+				if NewGGConfig().IsGitPull {
 					GitPull()
 				}
 				Backup()
@@ -56,15 +55,17 @@ func main() {
 			Usage:   "Pack & generate supervisor configuration file",
 			Aliases: []string{"p"},
 			Action: func(c *cli.Context) {
-				Build()
-				// Supervisor
-				Supervisor()
+				if err := Build(); err == nil {
+					Build()
+					// Supervisor
+					Supervisor()
 
-				// Pack
-				if err := Pack(); err != nil {
-					log.Println("Generate package error", err)
-				} else {
-					log.Printf("Pack success in %s.\n", conf.NewGGConfig().AppPath)
+					// Pack
+					if err := Pack(); err != nil {
+						log.Println("Generate package error", err)
+					} else {
+						log.Printf("Pack success in %s.\n", NewGGConfig().AppPath)
+					}
 				}
 			},
 		},
