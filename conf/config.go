@@ -29,7 +29,7 @@ type GGConfig struct {
 	AppSuffix         string
 	CurPath           string
 	AppPath           string
-	MainApplication   string
+	MainApplication   []string
 	RunDirectory      string
 	RunUser           string
 	LogDirectory      string
@@ -49,14 +49,6 @@ func NewGGConfig() *GGConfig {
 }
 func ParseConfig() {
 	AppConfig = new(GGConfig)
-
-	viper.SetConfigName("gg")
-	viper.AddConfigPath("./")
-
-	if err := viper.ReadInConfig(); err != nil {
-		log.Printf("Fatal error config file: %s \n", err)
-	}
-
 	AppConfig.GOPATH = os.Getenv("GOPATH")
 	AppConfig.GOOS = runtime.GOOS
 	if v, found := syscall.Getenv("GOOS"); found {
@@ -65,24 +57,40 @@ func ParseConfig() {
 	if !strings.HasSuffix(AppConfig.GOPATH, "/") && !strings.HasSuffix(AppConfig.GOPATH, "\\") {
 		AppConfig.GOPATH += "/"
 	}
-
 	AppConfig.CurPath, _ = os.Getwd()
-	AppConfig.AppName = viper.GetString("AppName")
 	if AppConfig.GOOS == "windows" {
 		AppConfig.AppSuffix = ".exe"
 	}
-	AppConfig.AppPath = AppConfig.CurPath + "/" + AppConfig.AppName + ".tar.gz"
-	AppConfig.MainApplication = viper.GetString("MainApplication")
 
-	AppConfig.RunDirectory = viper.GetString("RunDirectory")
-	AppConfig.RunUser = viper.GetString("RunUser")
-	AppConfig.LogDirectory = viper.GetString("LogDirectory")
-	AppConfig.SupervisorConf = viper.GetString("SupervisorConf")
-	log.Println(AppConfig.PackPaths, "^^^^^^")
-	AppConfig.PackPaths = append([]string{AppConfig.CurPath}, viper.GetStringSlice("PackPaths")...)
-	log.Println(AppConfig.PackPaths, "^^^^^^")
-	AppConfig.PackPaths = append(AppConfig.PackPaths, AppConfig.CurPath+"/"+AppConfig.AppName+AppConfig.AppSuffix)
-	log.Println(AppConfig.PackPaths, "^^^^^^")
+	viper.SetConfigName("gg")
+	viper.AddConfigPath("./")
+
+	if err := viper.ReadInConfig(); err != nil {
+		log.Println("There is no gg yaml config file.")
+		for _, arg := range os.Args {
+			if strings.HasSuffix(arg, ".go") {
+				if AppConfig.AppName == "" {
+					AppConfig.AppName = strings.TrimRight(arg, ".go")
+				}
+				AppConfig.MainApplication = append(AppConfig.MainApplication, arg)
+			}
+		}
+	} else {
+		AppConfig.AppName = viper.GetString("AppName")
+		AppConfig.RunDirectory = viper.GetString("RunDirectory")
+		AppConfig.RunUser = viper.GetString("RunUser")
+		AppConfig.LogDirectory = viper.GetString("LogDirectory")
+		AppConfig.SupervisorConf = viper.GetString("SupervisorConf")
+		log.Println(AppConfig.PackPaths, "^^^^^^")
+		AppConfig.PackPaths = append([]string{AppConfig.CurPath}, viper.GetStringSlice("PackPaths")...)
+		log.Println(AppConfig.PackPaths, "^^^^^^")
+		AppConfig.PackPaths = append(AppConfig.PackPaths, AppConfig.CurPath+"/"+AppConfig.AppName+AppConfig.AppSuffix)
+		log.Println(AppConfig.PackPaths, "^^^^^^")
+		AppConfig.MainApplication = viper.GetStringSlice("MainApplication")
+	}
+
+	AppConfig.AppPath = AppConfig.CurPath + "/" + AppConfig.AppName + ".tar.gz"
+
 	AppConfig.PackFormat = "gzip"
 	AppConfig.PackExcludePrefix = []string{".", AppConfig.AppPath, AppConfig.SupervisorConf}
 	AppConfig.PackExcludeSuffix = []string{".go", ".DS_Store", ".tmp"}

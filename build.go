@@ -11,7 +11,8 @@ import (
 )
 
 func Build() {
-	cmd := exec.Command("go", "build", "-o", conf.NewGGConfig().AppName+conf.NewGGConfig().AppSuffix, conf.NewGGConfig().MainApplication)
+	args := append([]string{"build", "-o", conf.NewGGConfig().AppName + conf.NewGGConfig().AppSuffix}, conf.NewGGConfig().MainApplication...)
+	cmd := exec.Command("go", args...)
 	log.Println(strings.Join(cmd.Args, " "))
 	var err_output bytes.Buffer
 	cmd.Stdout = os.Stdout
