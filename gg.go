@@ -41,9 +41,14 @@ func main() {
 			Aliases: []string{"d"},
 			Action: func(c *cli.Context) {
 				// Build()
-				GitPull()
+				if conf.NewGGConfig().IsGitPull {
+					GitPull()
+				}
 				Backup()
 				Deploy()
+				if conf.NewGGConfig().IsNgrok {
+					Ngrok()
+				}
 			},
 		},
 		{

@@ -6,3 +6,6 @@ RunUser: bryce
 LogDirectory: ~/
 SupervisorConf: gg.conf
 PackPaths: 
+
+Git: false
+GitPullBranch: master
