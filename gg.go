@@ -46,9 +46,9 @@ func main() {
 				}
 				Backup()
 				Deploy()
-				if conf.NewGGConfig().IsNgrok {
-					Ngrok()
-				}
+				// if conf.NewGGConfig().IsNgrok {
+				// 	Ngrok()
+				// }
 			},
 		},
 		{
