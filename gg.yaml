@@ -1,0 +1,8 @@
+AppName: gg
+MainApplication: gg.go
+
+RunDirectory: ~/gg
+RunUser: bryce
+LogDirectory: ~/
+SupervisorConf: gg.conf
+PackPaths: 
