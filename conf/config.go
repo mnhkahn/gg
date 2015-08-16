@@ -31,7 +31,6 @@ type GGConfig struct {
 	CurPath           string
 	AppPath           string
 	MainApplication   []string
-	GitPullBranch     string
 	RunDirectory      string
 	RunUser           string
 	LogDirectory      string
@@ -41,6 +40,12 @@ type GGConfig struct {
 	PackExcludeSuffix []string
 	PackExcludeRegexp []*regexp.Regexp
 	PackFormat        string
+
+	IsGitPull     bool
+	GitPullBranch string
+
+	// IsNgrok   bool
+	// NgrokPort string
 }
 
 func NewGGConfig() *GGConfig {
@@ -81,7 +86,6 @@ func ParseConfig() {
 		}
 	} else {
 		AppConfig.AppName = viper.GetString("AppName")
-		AppConfig.GitPullBranch = viper.GetString("GitPullBranch")
 		AppConfig.RunDirectory = strings.Replace(viper.GetString("RunDirectory"), "~", AppConfig.HOME, -1)
 		AppConfig.RunUser = viper.GetString("RunUser")
 		AppConfig.LogDirectory = strings.Replace(viper.GetString("LogDirectory"), "~", AppConfig.HOME, -1)
@@ -92,6 +96,12 @@ func ParseConfig() {
 		AppConfig.PackPaths = append(AppConfig.PackPaths, AppConfig.CurPath+"/"+AppConfig.AppName+AppConfig.AppSuffix)
 		log.Println(AppConfig.PackPaths, "^^^^^^")
 		AppConfig.MainApplication = viper.GetStringSlice("MainApplication")
+
+		AppConfig.IsGitPull = viper.GetBool("Git")
+		AppConfig.GitPullBranch = viper.GetString("GitPullBranch")
+
+		// AppConfig.IsNgrok = viper.GetBool("Ngrok")
+		// AppConfig.NgrokPort = viper.GetString("NgrokPort")
 	}
 
 	AppConfig.AppPath = AppConfig.CurPath + "/" + AppConfig.AppName + ".tar.gz"
