@@ -23,6 +23,7 @@ func init() {
 
 type GGConfig struct {
 	sync.Once
+	HOME              string
 	GOPATH            string
 	GOOS              string
 	AppName           string
@@ -49,6 +50,7 @@ func NewGGConfig() *GGConfig {
 }
 func ParseConfig() {
 	AppConfig = new(GGConfig)
+	AppConfig.HOME = os.Getenv("HOME")
 	AppConfig.GOPATH = os.Getenv("GOPATH")
 	AppConfig.GOOS = runtime.GOOS
 	if v, found := syscall.Getenv("GOOS"); found {
@@ -77,9 +79,9 @@ func ParseConfig() {
 		}
 	} else {
 		AppConfig.AppName = viper.GetString("AppName")
-		AppConfig.RunDirectory = viper.GetString("RunDirectory")
+		AppConfig.RunDirectory = strings.Replace(viper.GetString("RunDirectory"), "~", AppConfig.HOME, -1)
 		AppConfig.RunUser = viper.GetString("RunUser")
-		AppConfig.LogDirectory = viper.GetString("LogDirectory")
+		AppConfig.LogDirectory = strings.Replace(viper.GetString("LogDirectory"), "~", AppConfig.HOME, -1)
 		AppConfig.SupervisorConf = viper.GetString("SupervisorConf")
 		log.Println(AppConfig.PackPaths, "^^^^^^")
 		AppConfig.PackPaths = append([]string{AppConfig.CurPath}, viper.GetStringSlice("PackPaths")...)

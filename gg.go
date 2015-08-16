@@ -12,7 +12,7 @@ import (
 func main() {
 	app := cli.NewApp()
 	app.Name = "gg"
-	app.Usage = "A Deploy tool for Maodou written in Golang. It will works with Supervisor."
+	app.Usage = "A Deploy tool written in Golang. It will works with Supervisor."
 	app.Version = "0.0.1"
 	app.Commands = []cli.Command{
 		{

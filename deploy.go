@@ -6,6 +6,9 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strings"
+
+	"github.com/mitchellh/go-ps"
 
 	"github.com/mnhkahn/gg/conf"
 )
@@ -19,14 +22,20 @@ func Deploy() {
 
 	if err := CopyFile(conf.NewGGConfig().AppPath, conf.NewGGConfig().RunDirectory+conf.NewGGConfig().AppName+".tar.gz"); err != nil {
 		log.Println("Copy file error: ", err)
+		return
 	}
 
 	if err := unPackFile(conf.NewGGConfig().RunDirectory + conf.NewGGConfig().AppName + ".tar.gz"); err != nil {
 		log.Println("Tar package error: ", err)
 	}
 
-	println("kill process")
-	println("pgrep")
+	pss, _ := ps.Processes()
+	for _, p := range pss {
+		if strings.Index(p.Executable(), conf.NewGGConfig().AppName) != -1 {
+			log.Printf("[pgrep %s] got pid: %d.\n", conf.NewGGConfig().AppName, p.Pid())
+			killProcess(p.Pid())
+		}
+	}
 }
 
 func CopyFile(src, dst string) (err error) {
@@ -84,7 +93,8 @@ func copyFileContents(src, dst string) (err error) {
 	return
 }
 
-func killProcess(pid string) {
+func killProcess(pid int) {
+	log.Println("kill process", pid)
 	cmd := fmt.Sprintf("kill %v", pid)
 	runCommand(cmd)
 }
