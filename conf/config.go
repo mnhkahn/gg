@@ -31,6 +31,7 @@ type GGConfig struct {
 	CurPath           string
 	AppPath           string
 	MainApplication   []string
+	GitPullBranch     string
 	RunDirectory      string
 	RunUser           string
 	LogDirectory      string
@@ -63,6 +64,7 @@ func ParseConfig() {
 	if AppConfig.GOOS == "windows" {
 		AppConfig.AppSuffix = ".exe"
 	}
+	AppConfig.GitPullBranch = "master"
 
 	viper.SetConfigName("gg")
 	viper.AddConfigPath("./")
@@ -79,6 +81,7 @@ func ParseConfig() {
 		}
 	} else {
 		AppConfig.AppName = viper.GetString("AppName")
+		AppConfig.GitPullBranch = viper.GetString("GitPullBranch")
 		AppConfig.RunDirectory = strings.Replace(viper.GetString("RunDirectory"), "~", AppConfig.HOME, -1)
 		AppConfig.RunUser = viper.GetString("RunUser")
 		AppConfig.LogDirectory = strings.Replace(viper.GetString("LogDirectory"), "~", AppConfig.HOME, -1)

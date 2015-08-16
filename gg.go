@@ -41,7 +41,7 @@ func main() {
 			Aliases: []string{"d"},
 			Action: func(c *cli.Context) {
 				// Build()
-				// Pack()
+				GitPull()
 				Backup()
 				Deploy()
 			},
