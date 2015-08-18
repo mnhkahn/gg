@@ -16,8 +16,6 @@ func Backup() {
 }
 
 func Deploy() {
-	println("copy & tar")
-
 	if err := CopyFile(NewGGConfig().AppPath, NewGGConfig().RunDirectory+NewGGConfig().AppName+".tar.gz"); err != nil {
 		log.Println("Copy file error: ", err)
 		return
