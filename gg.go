@@ -43,8 +43,12 @@ func main() {
 				if NewGGConfig().IsGitPull {
 					GitPull()
 				}
-				Backup()
-				Deploy()
+				if err := Build(); err == nil {
+					Pack()
+					Backup()
+					Deploy()
+				}
+
 				// if conf.NewGGConfig().IsNgrok {
 				// 	Ngrok()
 				// }
@@ -56,7 +60,6 @@ func main() {
 			Aliases: []string{"p"},
 			Action: func(c *cli.Context) {
 				if err := Build(); err == nil {
-					Build()
 					// Supervisor
 					Supervisor()
 
