@@ -13,8 +13,6 @@ import (
 	"regexp"
 	"sort"
 	"strings"
-
-	"github.com/mnhkahn/gg/conf"
 )
 
 var (
@@ -154,7 +152,7 @@ func (wft *walkFileTree) walkLeaf(fpath string, fi os.FileInfo, err error) error
 		return err
 	}
 
-	if fpath == conf.NewGGConfig().AppPath {
+	if fpath == NewGGConfig().AppPath {
 		return nil
 	}
 
@@ -334,14 +332,14 @@ func packDirectory(excludePrefix []string, excludeSuffix []string,
 	if len(excludeRegexp) > 0 {
 		fmt.Printf("exclude filename regex: `%v`\n", excludeRegexp)
 	}
-	w, err := os.OpenFile(conf.NewGGConfig().AppPath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+	w, err := os.OpenFile(NewGGConfig().AppPath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 	if err != nil {
 		return err
 	}
 
 	var wft walker
 
-	if conf.NewGGConfig().PackFormat == "zip" {
+	if NewGGConfig().PackFormat == "zip" {
 		walk := new(zipWalk)
 		zw := zip.NewWriter(w)
 		defer func() {
@@ -386,7 +384,7 @@ func packDirectory(excludePrefix []string, excludeSuffix []string,
 }
 
 func Pack() (err error) {
-	return packDirectory(conf.NewGGConfig().PackExcludePrefix, conf.NewGGConfig().PackExcludeSuffix, conf.NewGGConfig().PackExcludeRegexp, conf.NewGGConfig().PackPaths...)
+	return packDirectory(NewGGConfig().PackExcludePrefix, NewGGConfig().PackExcludeSuffix, NewGGConfig().PackExcludeRegexp, NewGGConfig().PackPaths...)
 }
 
 func unPackFile(fileName string) (err error) {
@@ -417,11 +415,11 @@ func unPackFile(fileName string) (err error) {
 		// 显示文件
 		log.Println("Uncompressed", h.Name)
 		// 打开文件
-		tar_path := (conf.NewGGConfig().RunDirectory + h.Name)[:strings.LastIndex(conf.NewGGConfig().RunDirectory+h.Name, "/")]
+		tar_path := (NewGGConfig().RunDirectory + h.Name)[:strings.LastIndex(NewGGConfig().RunDirectory+h.Name, "/")]
 		if err := os.MkdirAll(tar_path, os.ModePerm); err != nil {
 			log.Println("Mkdir error: ", tar_path)
 		}
-		fw, err := os.OpenFile(conf.NewGGConfig().RunDirectory+h.Name, os.O_CREATE|os.O_WRONLY, 0777 /*os.FileMode(h.Mode)*/)
+		fw, err := os.OpenFile(NewGGConfig().RunDirectory+h.Name, os.O_CREATE|os.O_WRONLY, 0777 /*os.FileMode(h.Mode)*/)
 		if err != nil {
 			return err
 		}

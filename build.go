@@ -6,12 +6,10 @@ import (
 	"os"
 	"os/exec"
 	"strings"
-
-	"github.com/mnhkahn/gg/conf"
 )
 
-func Build() {
-	args := append([]string{"build", "-o", conf.NewGGConfig().AppName + conf.NewGGConfig().AppSuffix}, conf.NewGGConfig().MainApplication...)
+func Build() error {
+	args := append([]string{"build", "-o", NewGGConfig().AppName + NewGGConfig().AppSuffix}, NewGGConfig().MainApplication...)
 	cmd := exec.Command("go", args...)
 	log.Println(strings.Join(cmd.Args, " "))
 	var err_output bytes.Buffer
@@ -24,7 +22,8 @@ func Build() {
 
 	if err := cmd.Wait(); err != nil {
 		log.Printf("Build error: %v. %s.\n", err, string(err_output.Bytes()))
-		return
+		return err
 	}
 	log.Println("Build Success.")
+	return nil
 }

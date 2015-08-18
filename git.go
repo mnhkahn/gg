@@ -6,12 +6,10 @@ import (
 	"os"
 	"os/exec"
 	"strings"
-
-	"github.com/mnhkahn/gg/conf"
 )
 
 func GitPull() {
-	args := append([]string{"checkout", conf.NewGGConfig().GitPullBranch})
+	args := append([]string{"checkout", NewGGConfig().GitPullBranch})
 	cmd := exec.Command("git", args...)
 	log.Println(strings.Join(cmd.Args, " "))
 	var err_output bytes.Buffer
@@ -27,7 +25,7 @@ func GitPull() {
 		return
 	}
 
-	args = append([]string{"pull", "origin", conf.NewGGConfig().GitPullBranch})
+	args = append([]string{"pull", "origin", NewGGConfig().GitPullBranch})
 	cmd = exec.Command("git", args...)
 	log.Println(strings.Join(cmd.Args, " "))
 	cmd.Stdout = os.Stdout
@@ -42,4 +40,6 @@ func GitPull() {
 		return
 	}
 	log.Println("Git pull Success.")
+
+	ParseConfig()
 }

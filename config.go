@@ -1,4 +1,4 @@
-package conf
+package main
 
 import (
 	"log"
@@ -79,7 +79,7 @@ func ParseConfig() {
 		for _, arg := range os.Args {
 			if strings.HasSuffix(arg, ".go") {
 				if AppConfig.AppName == "" {
-					AppConfig.AppName = strings.TrimRight(arg, ".go")
+					AppConfig.AppName = strings.TrimSuffix(arg, ".go")
 				}
 				AppConfig.MainApplication = append(AppConfig.MainApplication, arg)
 			}

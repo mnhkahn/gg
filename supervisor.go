@@ -4,18 +4,16 @@ import (
 	"log"
 	"os"
 	"text/template"
-
-	"github.com/mnhkahn/gg/conf"
 )
 
 func Supervisor() {
-	f, err := os.OpenFile(conf.NewGGConfig().SupervisorConf, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, os.ModePerm)
+	f, err := os.OpenFile(NewGGConfig().SupervisorConf, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, os.ModePerm)
 	if err != nil {
 		log.Println("Generate supervisor file error", err)
 	}
 
 	tmpl, _ := template.New("supervisor").Parse(SupervisorTemplate)
-	tmpl.Execute(f, conf.NewGGConfig())
+	tmpl.Execute(f, NewGGConfig())
 }
 
 var (
