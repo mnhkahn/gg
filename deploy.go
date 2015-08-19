@@ -23,13 +23,13 @@ func Deploy() {
 
 	if err := unPackFile(NewGGConfig().RunDirectory + NewGGConfig().AppName + ".tar.gz"); err != nil {
 		log.Println("Tar package error: ", err)
-	}
-
-	pss, _ := ps.Processes()
-	for _, p := range pss {
-		if strings.Index(p.Executable(), NewGGConfig().AppName) != -1 {
-			log.Printf("[pgrep %s] got pid: %d.\n", NewGGConfig().AppName, p.Pid())
-			killProcess(p.Pid())
+	} else {
+		pss, _ := ps.Processes()
+		for _, p := range pss {
+			if strings.Index(p.Executable(), NewGGConfig().AppName) != -1 {
+				log.Printf("[pgrep %s] got pid: %d.\n", NewGGConfig().AppName, p.Pid())
+				killProcess(p.Pid())
+			}
 		}
 	}
 }
