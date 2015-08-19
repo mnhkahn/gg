@@ -6,13 +6,14 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 
 	"github.com/mitchellh/go-ps"
 )
 
-func Backup() {
-	// println("backup ")
+func Backup() error {
+	return deleteFile(NewGGConfig().RunDirectory, []string{NewGGConfig().RunDirectory + NewGGConfig().AppName + NewGGConfig().AppSuffix})
 }
 
 func Deploy() {
@@ -23,13 +24,13 @@ func Deploy() {
 
 	if err := unPackFile(NewGGConfig().RunDirectory + NewGGConfig().AppName + ".tar.gz"); err != nil {
 		log.Println("Tar package error: ", err)
-	}
-
-	pss, _ := ps.Processes()
-	for _, p := range pss {
-		if strings.Index(p.Executable(), NewGGConfig().AppName) != -1 {
-			log.Printf("[pgrep %s] got pid: %d.\n", NewGGConfig().AppName, p.Pid())
-			killProcess(p.Pid())
+	} else {
+		pss, _ := ps.Processes()
+		for _, p := range pss {
+			if strings.Index(p.Executable(), NewGGConfig().AppName) != -1 {
+				log.Printf("[pgrep %s] got pid: %d.\n", NewGGConfig().AppName, p.Pid())
+				killProcess(p.Pid())
+			}
 		}
 	}
 }
@@ -98,4 +99,28 @@ func killProcess(pid int) {
 func runCommand(cmd string) (string, error) {
 	res, err := exec.Command("/bin/sh", "-c", cmd).Output()
 	return string(res), err
+}
+
+func deleteFile(walkDir string, includeDir []string) error {
+	dirNames := includeDir
+	//遍历文件夹并把文件或文件夹名称加入相应的slice
+	err := filepath.Walk(walkDir, func(path string, info os.FileInfo, err error) error {
+		if info.IsDir() && path != walkDir {
+			dirNames = append(dirNames, path)
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+
+	for i := len(dirNames) - 1; i >= 0; i-- {
+		err := os.RemoveAll(dirNames[i])
+		if err != nil {
+			return err
+		} else {
+			log.Println("Delete file", dirNames[i])
+		}
+	}
+	return nil
 }
