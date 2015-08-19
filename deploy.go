@@ -13,7 +13,7 @@ import (
 )
 
 func Backup() error {
-	return deleteFile(NewGGConfig().RunDirectory, []string{NewGGConfig().AppPath})
+	return deleteFile(NewGGConfig().RunDirectory, []string{NewGGConfig().RunDirectory + NewGGConfig().AppName + NewGGConfig().AppSuffix})
 }
 
 func Deploy() {
@@ -117,7 +117,6 @@ func deleteFile(walkDir string, includeDir []string) error {
 	//把所有文件名称连接成一个字符串
 	// fileNamesAll := strings.Join(fileNames, "")
 	// log.Println(fileNamesAll)
-	log.Println(dirNames, "*************8")
 	for i := len(dirNames) - 1; i >= 0; i-- {
 		//文件夹名称不存在文件名称字符串内说明是个空文件夹
 		// if !strings.Contains(fileNamesAll, dirNames[i]) {
