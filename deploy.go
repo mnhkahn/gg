@@ -14,7 +14,6 @@ import (
 
 func Backup() {
 	deleteFile(NewGGConfig().RunDirectory)
-	// println("backup ")
 }
 
 func Deploy() {
