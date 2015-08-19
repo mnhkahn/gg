@@ -12,8 +12,8 @@ import (
 	"github.com/mitchellh/go-ps"
 )
 
-func Backup() {
-	deleteFile(NewGGConfig().RunDirectory)
+func Backup() error {
+	return deleteFile(NewGGConfig().RunDirectory, []string{NewGGConfig().AppPath})
 }
 
 func Deploy() {
@@ -101,34 +101,34 @@ func runCommand(cmd string) (string, error) {
 	return string(res), err
 }
 
-func deleteFile(walkDir string) error {
-	fileNames := make([]string, 0)
-	dirNames := make([]string, 0)
+func deleteFile(walkDir string, includeDir []string) error {
+	// fileNames := make([]string, 0)
+	dirNames := includeDir
 	//遍历文件夹并把文件或文件夹名称加入相应的slice
 	err := filepath.Walk(walkDir, func(path string, info os.FileInfo, err error) error {
-		if info.IsDir() {
+		if info.IsDir() && path != walkDir {
 			dirNames = append(dirNames, path)
-		} else {
-			fileNames = append(fileNames, path)
 		}
-		return err
+		return nil
 	})
 	if err != nil {
 		return err
 	}
 	//把所有文件名称连接成一个字符串
-	fileNamesAll := strings.Join(fileNames, "")
+	// fileNamesAll := strings.Join(fileNames, "")
+	// log.Println(fileNamesAll)
+	log.Println(dirNames, "*************8")
 	for i := len(dirNames) - 1; i >= 0; i-- {
 		//文件夹名称不存在文件名称字符串内说明是个空文件夹
-		if !strings.Contains(fileNamesAll, dirNames[i]) {
-			log.Printf("%s is empty\n", dirNames[i])
-			err := os.Remove(dirNames[i])
-			if err != nil {
-				return err
-			} else {
-				log.Println("Delete file", dirNames[i])
-			}
+		// if !strings.Contains(fileNamesAll, dirNames[i]) {
+		// 	log.Printf("%s is empty\n", dirNames[i])
+		err := os.RemoveAll(dirNames[i])
+		if err != nil {
+			return err
+		} else {
+			log.Println("Delete file", dirNames[i])
 		}
+		// }
 	}
 	return nil
 }

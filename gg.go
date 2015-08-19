@@ -45,8 +45,11 @@ func main() {
 				}
 				if err := Build(); err == nil {
 					Pack()
-					Backup()
-					Deploy()
+					if err := Backup(); err != nil {
+						log.Println("Delete file error", err)
+					} else {
+						Deploy()
+					}
 				}
 
 				// if conf.NewGGConfig().IsNgrok {
