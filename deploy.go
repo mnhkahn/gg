@@ -102,7 +102,6 @@ func runCommand(cmd string) (string, error) {
 }
 
 func deleteFile(walkDir string, includeDir []string) error {
-	// fileNames := make([]string, 0)
 	dirNames := includeDir
 	//遍历文件夹并把文件或文件夹名称加入相应的slice
 	err := filepath.Walk(walkDir, func(path string, info os.FileInfo, err error) error {
@@ -114,20 +113,14 @@ func deleteFile(walkDir string, includeDir []string) error {
 	if err != nil {
 		return err
 	}
-	//把所有文件名称连接成一个字符串
-	// fileNamesAll := strings.Join(fileNames, "")
-	// log.Println(fileNamesAll)
+
 	for i := len(dirNames) - 1; i >= 0; i-- {
-		//文件夹名称不存在文件名称字符串内说明是个空文件夹
-		// if !strings.Contains(fileNamesAll, dirNames[i]) {
-		// 	log.Printf("%s is empty\n", dirNames[i])
 		err := os.RemoveAll(dirNames[i])
 		if err != nil {
 			return err
 		} else {
 			log.Println("Delete file", dirNames[i])
 		}
-		// }
 	}
 	return nil
 }
