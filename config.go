@@ -90,11 +90,8 @@ func ParseConfig() {
 		AppConfig.RunUser = viper.GetString("RunUser")
 		AppConfig.LogDirectory = strings.Replace(viper.GetString("LogDirectory"), "~", AppConfig.HOME, -1)
 		AppConfig.SupervisorConf = viper.GetString("SupervisorConf")
-		log.Println(AppConfig.PackPaths, "^^^^^^")
 		AppConfig.PackPaths = append([]string{AppConfig.CurPath}, viper.GetStringSlice("PackPaths")...)
-		log.Println(AppConfig.PackPaths, "^^^^^^")
 		AppConfig.PackPaths = append(AppConfig.PackPaths, AppConfig.CurPath+"/"+AppConfig.AppName+AppConfig.AppSuffix)
-		log.Println(AppConfig.PackPaths, "^^^^^^")
 		AppConfig.MainApplication = viper.GetStringSlice("MainApplication")
 
 		AppConfig.IsGitPull = viper.GetBool("Git")
