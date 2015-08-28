@@ -25,6 +25,7 @@ type GGConfig struct {
 	sync.Once
 	HOME              string
 	GOPATH            string
+	GOBIN             string
 	GOOS              string
 	AppName           string
 	AppSuffix         string
@@ -58,6 +59,7 @@ func ParseConfig() {
 	AppConfig = new(GGConfig)
 	AppConfig.HOME = os.Getenv("HOME")
 	AppConfig.GOPATH = os.Getenv("GOPATH")
+	AppConfig.GOBIN = AppConfig.GOPATH + "/bin"
 	AppConfig.GOOS = runtime.GOOS
 	if v, found := syscall.Getenv("GOOS"); found {
 		AppConfig.GOOS = v
@@ -75,10 +77,10 @@ func ParseConfig() {
 	viper.AddConfigPath("./")
 
 	if err := viper.ReadInConfig(); err != nil {
-		log.Println("There is no gg yaml config file.")
-		for _, arg := range os.Args {
+		log.Println("There is no gg yaml config file.", err)
+		for i, arg := range os.Args {
 			if strings.HasSuffix(arg, ".go") {
-				if AppConfig.AppName == "" {
+				if i == 0 && AppConfig.AppName == "" {
 					AppConfig.AppName = strings.TrimSuffix(arg, ".go")
 				}
 				AppConfig.MainApplication = append(AppConfig.MainApplication, arg)

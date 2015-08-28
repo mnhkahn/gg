@@ -1,5 +1,5 @@
 AppName: gg
-MainApplication: gg.go
+MainApplication: [gg.go,config.go,build.go,deploy.go,pack.go,start.go,git.go,supervisor.go]
 
 RunDirectory: ~/gg
 RunUser: bryce
