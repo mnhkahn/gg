@@ -25,8 +25,11 @@ type GGConfig struct {
 	sync.Once
 	HOME              string
 	GOPATH            string
+	GOBIN             string
 	GOOS              string
 	AppName           string
+	FileWatcher       map[string]bool
+	IgnoreFileWather  map[string]bool
 	AppSuffix         string
 	CurPath           string
 	AppPath           string
@@ -58,6 +61,7 @@ func ParseConfig() {
 	AppConfig = new(GGConfig)
 	AppConfig.HOME = os.Getenv("HOME")
 	AppConfig.GOPATH = os.Getenv("GOPATH")
+	AppConfig.GOBIN = AppConfig.GOPATH + "/bin"
 	AppConfig.GOOS = runtime.GOOS
 	if v, found := syscall.Getenv("GOOS"); found {
 		AppConfig.GOOS = v
@@ -74,11 +78,13 @@ func ParseConfig() {
 	viper.SetConfigName("gg")
 	viper.AddConfigPath("./")
 
+	AppConfig.FileWatcher = map[string]bool{AppConfig.CurPath: false}
+	AppConfig.IgnoreFileWather = map[string]bool{}
 	if err := viper.ReadInConfig(); err != nil {
-		log.Println("There is no gg yaml config file.")
-		for _, arg := range os.Args {
+		log.Println("There is no gg yaml config file.", err)
+		for i, arg := range os.Args {
 			if strings.HasSuffix(arg, ".go") {
-				if AppConfig.AppName == "" {
+				if i == 0 && AppConfig.AppName == "" {
 					AppConfig.AppName = strings.TrimSuffix(arg, ".go")
 				}
 				AppConfig.MainApplication = append(AppConfig.MainApplication, arg)
@@ -86,15 +92,21 @@ func ParseConfig() {
 		}
 	} else {
 		AppConfig.AppName = viper.GetString("AppName")
+		fileWatcher := viper.GetStringSlice("FileWatcher")
+		for _, fw := range fileWatcher {
+			AppConfig.FileWatcher[strings.Replace(fw, "$GOPATH", AppConfig.GOPATH+"src", -1)] = false
+		}
+		ignoreFileWatcher := viper.GetStringSlice("IgnoreFileWather")
+		for _, ifw := range ignoreFileWatcher {
+			AppConfig.IgnoreFileWather[ifw] = false
+		}
+
 		AppConfig.RunDirectory = strings.Replace(viper.GetString("RunDirectory"), "~", AppConfig.HOME, -1)
 		AppConfig.RunUser = viper.GetString("RunUser")
 		AppConfig.LogDirectory = strings.Replace(viper.GetString("LogDirectory"), "~", AppConfig.HOME, -1)
 		AppConfig.SupervisorConf = viper.GetString("SupervisorConf")
-		log.Println(AppConfig.PackPaths, "^^^^^^")
 		AppConfig.PackPaths = append([]string{AppConfig.CurPath}, viper.GetStringSlice("PackPaths")...)
-		log.Println(AppConfig.PackPaths, "^^^^^^")
 		AppConfig.PackPaths = append(AppConfig.PackPaths, AppConfig.CurPath+"/"+AppConfig.AppName+AppConfig.AppSuffix)
-		log.Println(AppConfig.PackPaths, "^^^^^^")
 		AppConfig.MainApplication = viper.GetStringSlice("MainApplication")
 
 		AppConfig.IsGitPull = viper.GetBool("Git")
@@ -105,6 +117,7 @@ func ParseConfig() {
 	}
 
 	AppConfig.AppPath = AppConfig.CurPath + "/" + AppConfig.AppName + ".tar.gz"
+	AppConfig.IgnoreFileWather[AppConfig.CurPath+"/"+AppConfig.AppName] = false
 
 	AppConfig.PackFormat = "gzip"
 	AppConfig.PackExcludePrefix = []string{".", AppConfig.AppPath, AppConfig.SupervisorConf}

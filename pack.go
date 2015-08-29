@@ -171,8 +171,7 @@ func (wft *walkFileTree) walkLeaf(fpath string, fi os.FileInfo, err error) error
 	}
 
 	if added, err := wft.wak.compress(name, fpath, fi); added {
-		fmt.Println(name, "*", fpath, fi)
-		log.Printf("Compressed: %s\n", name)
+		log.Printf("Compressed: %s\n", fpath)
 		wft.allfiles[name] = true
 		return err
 	} else {
@@ -374,7 +373,6 @@ func packDirectory(excludePrefix []string, excludeSuffix []string,
 	}
 
 	for _, p := range includePath {
-		fmt.Println(p, "*****")
 		err = wft.walkRoot(p)
 		if err != nil {
 			log.Println("Tar error:", err)
@@ -414,8 +412,12 @@ func unPackFile(fileName string) (err error) {
 		if err != nil {
 			return err
 		}
+		// Skip the path of .
+		if h.Name == "" {
+			continue
+		}
 		// 显示文件
-		log.Println("Uncompressed", h.Name)
+		log.Println("Uncompressed:", h.Name)
 		// 打开文件
 		tar_path := (NewGGConfig().RunDirectory + h.Name)[:strings.LastIndex(NewGGConfig().RunDirectory+h.Name, "/")]
 		if err := os.MkdirAll(tar_path, os.ModePerm); err != nil {
