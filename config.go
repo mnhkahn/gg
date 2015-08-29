@@ -28,6 +28,8 @@ type GGConfig struct {
 	GOBIN             string
 	GOOS              string
 	AppName           string
+	FileWatcher       map[string]bool
+	IgnoreFileWather  map[string]bool
 	AppSuffix         string
 	CurPath           string
 	AppPath           string
@@ -76,6 +78,8 @@ func ParseConfig() {
 	viper.SetConfigName("gg")
 	viper.AddConfigPath("./")
 
+	AppConfig.FileWatcher = map[string]bool{AppConfig.CurPath: false}
+	AppConfig.IgnoreFileWather = map[string]bool{}
 	if err := viper.ReadInConfig(); err != nil {
 		log.Println("There is no gg yaml config file.", err)
 		for i, arg := range os.Args {
@@ -88,6 +92,15 @@ func ParseConfig() {
 		}
 	} else {
 		AppConfig.AppName = viper.GetString("AppName")
+		fileWatcher := viper.GetStringSlice("FileWatcher")
+		for _, fw := range fileWatcher {
+			AppConfig.FileWatcher[strings.Replace(fw, "$GOPATH", AppConfig.GOPATH+"src", -1)] = false
+		}
+		ignoreFileWatcher := viper.GetStringSlice("IgnoreFileWather")
+		for _, ifw := range ignoreFileWatcher {
+			AppConfig.IgnoreFileWather[ifw] = false
+		}
+
 		AppConfig.RunDirectory = strings.Replace(viper.GetString("RunDirectory"), "~", AppConfig.HOME, -1)
 		AppConfig.RunUser = viper.GetString("RunUser")
 		AppConfig.LogDirectory = strings.Replace(viper.GetString("LogDirectory"), "~", AppConfig.HOME, -1)
@@ -104,6 +117,7 @@ func ParseConfig() {
 	}
 
 	AppConfig.AppPath = AppConfig.CurPath + "/" + AppConfig.AppName + ".tar.gz"
+	AppConfig.IgnoreFileWather[AppConfig.CurPath+"/"+AppConfig.AppName] = false
 
 	AppConfig.PackFormat = "gzip"
 	AppConfig.PackExcludePrefix = []string{".", AppConfig.AppPath, AppConfig.SupervisorConf}
