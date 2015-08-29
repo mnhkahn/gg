@@ -6,14 +6,13 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"strings"
 
 	"github.com/mitchellh/go-ps"
 )
 
 func Backup() error {
-	return deleteFile(NewGGConfig().RunDirectory, []string{NewGGConfig().RunDirectory + NewGGConfig().AppName + NewGGConfig().AppSuffix})
+	return deleteFile([]string{NewGGConfig().RunDirectory + NewGGConfig().AppName + NewGGConfig().AppSuffix})
 }
 
 func Deploy() {
@@ -101,25 +100,13 @@ func runCommand(cmd string) (string, error) {
 	return string(res), err
 }
 
-func deleteFile(walkDir string, includeDir []string) error {
-	dirNames := includeDir
-	//遍历文件夹并把文件或文件夹名称加入相应的slice
-	err := filepath.Walk(walkDir, func(path string, info os.FileInfo, err error) error {
-		if info.IsDir() && path != walkDir {
-			dirNames = append(dirNames, path)
-		}
-		return nil
-	})
-	if err != nil {
-		return err
-	}
-
-	for i := len(dirNames) - 1; i >= 0; i-- {
-		err := os.RemoveAll(dirNames[i])
+func deleteFile(includeDir []string) error {
+	for i := len(includeDir) - 1; i >= 0; i-- {
+		err := os.RemoveAll(includeDir[i])
 		if err != nil {
 			return err
 		} else {
-			log.Println("Delete file", dirNames[i])
+			log.Println("Delete file", includeDir[i])
 		}
 	}
 	return nil

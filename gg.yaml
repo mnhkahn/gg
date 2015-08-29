@@ -1,5 +1,7 @@
 AppName: gg
-MainApplication: gg.go
+MainApplication: [gg.go,config.go,build.go,deploy.go,pack.go,start.go,git.go,supervisor.go]
+FileWatcher: 
+IgnoreFileWather: gg
 
 RunDirectory: ~/gg
 RunUser: bryce
