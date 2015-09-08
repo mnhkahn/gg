@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"log"
 	"os"
 	"os/exec"
@@ -18,11 +19,28 @@ var (
 )
 
 func Start() {
-	cmd = exec.Command("./" + NewGGConfig().AppName + NewGGConfig().AppSuffix)
+	if AppConfig.GOOS == "windows" {
+		cmd = exec.Command(NewGGConfig().CurPath + "\\" + NewGGConfig().AppName + NewGGConfig().AppSuffix + " " + NewGGConfig().RunFlag)
+	} else {
+		cmd = exec.Command("./" + NewGGConfig().AppName + NewGGConfig().AppSuffix + " " + NewGGConfig().RunFlag)
+	}
+	println("*****", NewGGConfig().CurPath)
+	cmd.Env = append(os.Environ(), NewGGConfig().Envs...)
+	cmd.Env = append(cmd.Env, NewGGConfig().CurPath)
+	log.Println(strings.Join(cmd.Args, " "))
+	var err_output bytes.Buffer
 	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+	cmd.Stderr = &err_output
 
-	cmd.Run()
+	if err := cmd.Start(); err != nil { //Use start, not run
+		log.Println("An error occured: ", err) //replace with logger, or anything you want
+	}
+
+	if err := cmd.Wait(); err != nil {
+		log.Printf("Start error: %v. %s.\n", err, string(err_output.Bytes()))
+		return
+	}
+	log.Println("Start Success.")
 }
 
 func Watch() {

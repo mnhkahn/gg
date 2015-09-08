@@ -19,7 +19,7 @@ func Supervisor() {
 var (
 	SupervisorTemplate = `[program:{{.AppName}}]
 directory = {{.RunDirectory}}
-command = {{.RunDirectory}}{{.AppName}}
+command = {{.RunDirectory}}{{.AppName}} {{.RunFlag}}
 autostart = true
 autorestart = true
 startsecs = 5

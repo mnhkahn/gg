@@ -21,8 +21,8 @@ func main() {
 				// Build
 				if err := Build(); err == nil {
 					// Run
-					go Start()
-					Watch()
+					Start()
+					// Watch()
 				}
 			},
 		},
