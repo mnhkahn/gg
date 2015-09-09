@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"log"
 	"os"
 	"os/exec"
@@ -18,11 +19,22 @@ var (
 )
 
 func Start() {
-	cmd = exec.Command("./" + NewGGConfig().AppName + NewGGConfig().AppSuffix)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+	cmd = exec.Command("./"+NewGGConfig().AppName+NewGGConfig().AppSuffix, NewGGConfig().RunFlag)
 
-	cmd.Run()
+	log.Println(strings.Join(cmd.Args, " "))
+	var err_output bytes.Buffer
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = &err_output
+
+	if err := cmd.Start(); err != nil { //Use start, not run
+		log.Println("An error occured: ", err) //replace with logger, or anything you want
+	}
+
+	if err := cmd.Wait(); err != nil {
+		log.Printf("Start error: %v. %s.\n", err, string(err_output.Bytes()))
+		return
+	}
+	log.Println("Start Success.")
 }
 
 func Watch() {
