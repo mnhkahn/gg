@@ -19,14 +19,8 @@ var (
 )
 
 func Start() {
-	if AppConfig.GOOS == "windows" {
-		cmd = exec.Command(NewGGConfig().CurPath + "\\" + NewGGConfig().AppName + NewGGConfig().AppSuffix + " " + NewGGConfig().RunFlag)
-	} else {
-		cmd = exec.Command("./" + NewGGConfig().AppName + NewGGConfig().AppSuffix + " " + NewGGConfig().RunFlag)
-	}
-	println("*****", NewGGConfig().CurPath)
-	cmd.Env = append(os.Environ(), NewGGConfig().Envs...)
-	cmd.Env = append(cmd.Env, NewGGConfig().CurPath)
+	cmd = exec.Command("./"+NewGGConfig().AppName+NewGGConfig().AppSuffix, NewGGConfig().RunFlag)
+
 	log.Println(strings.Join(cmd.Args, " "))
 	var err_output bytes.Buffer
 	cmd.Stdout = os.Stdout
