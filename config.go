@@ -30,6 +30,8 @@ type GGConfig struct {
 	AppName           string
 	FileWatcher       map[string]bool
 	IgnoreFileWather  map[string]bool
+	Envs              []string
+	RunFlag           string
 	AppSuffix         string
 	CurPath           string
 	AppPath           string
@@ -101,6 +103,8 @@ func ParseConfig() {
 			AppConfig.IgnoreFileWather[ifw] = false
 		}
 
+		AppConfig.Envs = viper.GetStringSlice("Envs")
+		AppConfig.RunFlag = viper.GetString("RunFlag")
 		AppConfig.RunDirectory = strings.Replace(viper.GetString("RunDirectory"), "~", AppConfig.HOME, -1)
 		AppConfig.RunUser = viper.GetString("RunUser")
 		AppConfig.LogDirectory = strings.Replace(viper.GetString("LogDirectory"), "~", AppConfig.HOME, -1)
