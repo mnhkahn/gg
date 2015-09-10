@@ -22,7 +22,7 @@ func main() {
 				if err := Build(); err == nil {
 					// Run
 					Start()
-					// Watch()
+					Watch()
 				}
 			},
 		},
